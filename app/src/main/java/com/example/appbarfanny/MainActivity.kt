@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppBarFannyTheme {
-                //AppNavigation()
-                HomeView()
+                AppNavigation()
+                //HomeView()
             }
         }
     }

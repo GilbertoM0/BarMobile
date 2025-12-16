@@ -51,7 +51,7 @@ fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             SearchBar()
-            CategoryTabs()
+
             FindResultsHeader(itemCount = bebidas.size)
             when {
                 isLoading -> {
@@ -149,29 +149,6 @@ fun SearchBar() {
 }
 
 @Composable
-fun CategoryTabs() {
-    val categories = listOf("Bebidas", "Comida")
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(categories) { category ->
-            val isSelected = category == "Drinks"
-            Button(
-                onClick = { /* TODO */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Text(text = category)
-            }
-        }
-    }
-}
-
-@Composable
 fun FindResultsHeader(itemCount: Int) {
     Row(
         modifier = Modifier
@@ -180,8 +157,7 @@ fun FindResultsHeader(itemCount: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Buscar resultados ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(text = "(Ver todos)", color = MaterialTheme.colorScheme.primary)
+        Text(text = "Productos ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
 }
 
