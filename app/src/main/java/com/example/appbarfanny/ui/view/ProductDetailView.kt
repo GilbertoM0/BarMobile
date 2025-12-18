@@ -26,10 +26,10 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
     val bebida = homeViewModel.getBebidaById(bebidaId)
 
     Scaffold(
-        containerColor = Color(0xFF121212) // Dark background
-    ) {
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
         if (bebida != null) {
-            Column(modifier = Modifier.fillMaxSize().padding(it)) {
+            Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -47,9 +47,9 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(16.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f), shape = CircleShape)
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 }
 
@@ -58,7 +58,7 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                         .fillMaxSize()
                         .offset(y = (-20).dp), // Overlap with the image
                     shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(
                         modifier = Modifier
@@ -70,14 +70,14 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                             text = bebida.nombre,
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "$${"%.2f".format(bebida.precio)}",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD0BCFF) // Purple accent color
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -91,10 +91,10 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                                 Button(
                                     onClick = { selectedSize = size },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (selectedSize == size) Color(0xFFD0BCFF) else Color.DarkGray
+                                        containerColor = if (selectedSize == size) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                                     )
                                 ) {
-                                    Text(size, color = if (selectedSize == size) Color.Black else Color.White)
+                                    Text(size, color = if (selectedSize == size) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }
@@ -106,7 +106,7 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6650a4)),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Agregar a la orden", fontSize = 18.sp)
@@ -117,16 +117,16 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
         } else {
             // Handle case where bebida is not found
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Producto no encontrado", color = Color.White)
+                Text("Producto no encontrado", color = MaterialTheme.colorScheme.onBackground)
                 // Add a back button here too for better UX
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(16.dp)
-                        .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.5f), shape = CircleShape)
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                 }
             }
         }

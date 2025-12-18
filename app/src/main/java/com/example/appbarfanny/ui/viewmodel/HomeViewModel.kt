@@ -11,7 +11,10 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private var allBebidas by mutableStateOf<List<Bebida>>(emptyList())
-    var bebidasList by mutableStateOf<List<Bebida>>(emptyList())
+    var filteredBebidas by mutableStateOf<List<Bebida>>(emptyList())
+    val homeScreenBebidas: List<Bebida>
+        get() = filteredBebidas.take(6)
+
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
     var searchQuery by mutableStateOf("")
@@ -29,7 +32,7 @@ class HomeViewModel : ViewModel() {
 
     fun onSearchQueryChanged(query: String) {
         searchQuery = query
-        bebidasList = if (query.isBlank()) {
+        filteredBebidas = if (query.isBlank()) {
             allBebidas
         } else {
             allBebidas.filter { it.nombre.contains(query, ignoreCase = true) }
@@ -42,7 +45,7 @@ class HomeViewModel : ViewModel() {
             try {
                 val bebidas = RetrofitClient.authService.getBebidas()
                 allBebidas = bebidas
-                bebidasList = bebidas
+                filteredBebidas = bebidas
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {

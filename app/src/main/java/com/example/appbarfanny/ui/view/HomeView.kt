@@ -46,7 +46,7 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
         homeViewModel.loadBebidas()
     }
 
-    val bebidas = homeViewModel.bebidasList
+    val bebidas = homeViewModel.homeScreenBebidas
     val isLoading = homeViewModel.isLoading
     val error = homeViewModel.errorMessage
 
@@ -85,7 +85,9 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             SearchBar(homeViewModel.searchQuery, homeViewModel::onSearchQueryChanged)
-            FindResultsHeader(itemCount = bebidas.size)
+            FindResultsHeader(itemCount = bebidas.size, onSeeAllClick = {
+                navController.navigate(AppScreens.AllProductsView.route)
+            })
             when {
                 isLoading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -190,8 +192,8 @@ fun HomeHeader(selectedTable: Int, onTableClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Text(text = "Hello", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Darlene", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(text = "Hola", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Fanny", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
         Chip(onClick = onTableClick, label = { Text(String.format("Mesa %02d", selectedTable)) }, leadingIcon = {
@@ -212,18 +214,18 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
         placeholder = { Text("Buscar Productos") },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
         trailingIcon = {
-            /*IconButton(onClick = { /* TODO */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_filter),
-                    contentDescription = "Filter",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(8.dp)
-                )
-            }*/
+//            IconButton(onClick = { /* TODO */ }) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.ic_filter),
+//                    contentDescription = "Filter",
+//                    tint = Color.White,
+//                    modifier = Modifier
+//                        .size(40.dp)
+//                        .clip(RoundedCornerShape(8.dp))
+//                        .background(MaterialTheme.colorScheme.primary)
+//                        .padding(8.dp)
+//                )
+//            }
         },
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
@@ -233,7 +235,7 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
 }
 
 @Composable
-fun FindResultsHeader(itemCount: Int) {
+fun FindResultsHeader(itemCount: Int, onSeeAllClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -241,8 +243,8 @@ fun FindResultsHeader(itemCount: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Find results ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(text = "(-----)", color = MaterialTheme.colorScheme.primary)
+        Text(text = "Productos más vendidos ($itemCount )", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = "(Mostrar todos)", color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onSeeAllClick() })
     }
 }
 
