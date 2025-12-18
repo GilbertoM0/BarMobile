@@ -26,15 +26,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.appbarfanny.R
 import com.example.appbarfanny.data.model.Bebida
+import com.example.appbarfanny.navegation.AppScreens
 import com.example.appbarfanny.ui.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
+fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewModel()) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -75,7 +77,9 @@ fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(bebidas) { bebida ->
-                            BebidaGridItem(bebida = bebida)
+                            BebidaGridItem(bebida = bebida, onProductClick = {
+                                navController.navigate(AppScreens.ProductDetailView.route + "/${bebida.id}")
+                            })
                         }
                     }
                 }
@@ -179,9 +183,11 @@ fun FindResultsHeader(itemCount: Int) {
 }
 
 @Composable
-fun BebidaGridItem(bebida: Bebida) {
+fun BebidaGridItem(bebida: Bebida, onProductClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onProductClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -259,7 +265,7 @@ fun TableSelectorBottomSheet(onTableSelected: (Int) -> Unit, selectedTable: Int)
 @Composable
 fun HomeViewPreview() {
     MaterialTheme {
-        HomeView()
+        // HomeView() // This preview won't work with NavController
     }
 }
 

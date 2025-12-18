@@ -19,6 +19,10 @@ class HomeViewModel : ViewModel() {
     var selectedTable by mutableStateOf(4) // Default table
         private set
 
+    fun getBebidaById(id: Int): Bebida? {
+        return allBebidas.find { it.id == id }
+    }
+
     fun onTableSelected(table: Int) {
         selectedTable = table
     }
