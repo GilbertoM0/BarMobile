@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appbarfanny.data.RetrofitClient
 import com.example.appbarfanny.data.model.Bebida
+import com.example.appbarfanny.data.model.OrderStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
@@ -21,6 +23,22 @@ class HomeViewModel : ViewModel() {
         private set
     var selectedTable by mutableStateOf(4) // Default table
         private set
+    var orderStatus by mutableStateOf<OrderStatus?>(null)
+        private set
+
+    fun startOrderStatusSimulation() {
+        viewModelScope.launch {
+            orderStatus = OrderStatus.RECIBIDO
+            delay(3000)
+            orderStatus = OrderStatus.PREPARANDO
+            delay(3000)
+            orderStatus = OrderStatus.EN_CAMINO
+            delay(3000)
+            orderStatus = OrderStatus.ENTREGADO
+            delay(2000)
+            orderStatus = null
+        }
+    }
 
     fun getBebidaById(id: Int): Bebida? {
         return allBebidas.find { it.id == id }

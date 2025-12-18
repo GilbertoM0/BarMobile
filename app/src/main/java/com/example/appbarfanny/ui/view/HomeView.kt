@@ -1,5 +1,6 @@
 package com.example.appbarfanny.ui.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.appbarfanny.R
 import com.example.appbarfanny.data.model.Bebida
+import com.example.appbarfanny.data.model.OrderStatus
 import com.example.appbarfanny.navegation.AppScreens
 import com.example.appbarfanny.ui.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
@@ -85,6 +87,9 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             SearchBar(homeViewModel.searchQuery, homeViewModel::onSearchQueryChanged)
+            homeViewModel.orderStatus?.let {
+                OrderStatusBanner(status = it)
+            }
             FindResultsHeader(itemCount = bebidas.size, onSeeAllClick = {
                 navController.navigate(AppScreens.AllProductsView.route)
             })
@@ -173,6 +178,37 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
 }
 
 @Composable
+fun OrderStatusBanner(status: OrderStatus) {
+    val icon = when (status) {
+        OrderStatus.RECIBIDO -> Icons.Default.Receipt
+        OrderStatus.PREPARANDO -> Icons.Default.Restaurant
+        OrderStatus.EN_CAMINO -> Icons.Default.DeliveryDining
+        OrderStatus.ENTREGADO -> Icons.Default.Done
+    }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, contentDescription = status.displayText, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(status.displayText, color = Color.White)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            LinearProgressIndicator(
+                progress = { status.progress },
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
 fun HomeHeader(selectedTable: Int, onTableClick: () -> Unit) {
     Row(
         modifier = Modifier
@@ -243,8 +279,8 @@ fun FindResultsHeader(itemCount: Int, onSeeAllClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Productos más vendidos ($itemCount )", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(text = "(Mostrar todos)", color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onSeeAllClick() })
+        Text(text = "Bebidas más vendidas ($itemCount )", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = "(Mostrar todo)", color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable { onSeeAllClick() })
     }
 }
 

@@ -102,7 +102,10 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                         Spacer(modifier = Modifier.weight(1f)) // Push button to the bottom
 
                         Button(
-                            onClick = { /* TODO: Add to order logic */ },
+                            onClick = { 
+                                homeViewModel.startOrderStatusSimulation()
+                                navController.popBackStack()
+                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
