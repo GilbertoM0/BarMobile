@@ -2,13 +2,10 @@ package com.example.appbarfanny.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.appbarfanny.R
@@ -50,8 +46,7 @@ fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            SearchBar()
-
+            SearchBar(homeViewModel.searchQuery, homeViewModel::onSearchQueryChanged)
             FindResultsHeader(itemCount = bebidas.size)
             when {
                 isLoading -> {
@@ -94,7 +89,7 @@ fun HomeHeader() {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = R.drawable.estefania),
+                painter = painterResource(id = R.drawable.home_perfil),
                 contentDescription = "Profile Picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -103,8 +98,8 @@ fun HomeHeader() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Text(text = "Hola", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Estefania López Rivas", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(text = "Hello", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Darlene", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
         IconButton(onClick = { /* TODO */ }) {
@@ -114,38 +109,35 @@ fun HomeHeader() {
 }
 
 @Composable
-fun SearchBar() {
-    Row(
+fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChanged,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .height(56.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = "Search",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            .clip(RoundedCornerShape(12.dp)),
+        placeholder = { Text("Buscar Productos") },
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+        trailingIcon = {
+            IconButton(onClick = { /* TODO */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_filter),
+                    contentDescription = "Filter",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(8.dp)
+                )
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = "Buscar Productos", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                painter = painterResource(id = R.drawable.filtro_de_agua),
-                contentDescription = "Filter",
-                tint = Color.White,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(8.dp)
-            )
-        }
-    }
+    )
 }
 
 @Composable
@@ -157,7 +149,8 @@ fun FindResultsHeader(itemCount: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Productos ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = "Find results ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = "(See All)", color = MaterialTheme.colorScheme.primary)
     }
 }
 

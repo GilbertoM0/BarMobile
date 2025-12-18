@@ -10,15 +10,29 @@ import com.example.appbarfanny.data.model.Bebida
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
+    private var allBebidas by mutableStateOf<List<Bebida>>(emptyList())
     var bebidasList by mutableStateOf<List<Bebida>>(emptyList())
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+    var searchQuery by mutableStateOf("")
+        private set
+
+    fun onSearchQueryChanged(query: String) {
+        searchQuery = query
+        bebidasList = if (query.isBlank()) {
+            allBebidas
+        } else {
+            allBebidas.filter { it.nombre.contains(query, ignoreCase = true) }
+        }
+    }
 
     fun loadBebidas() {
         viewModelScope.launch {
             isLoading = true
             try {
-                bebidasList = RetrofitClient.authService.getBebidas()
+                val bebidas = RetrofitClient.authService.getBebidas()
+                allBebidas = bebidas
+                bebidasList = bebidas
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {
