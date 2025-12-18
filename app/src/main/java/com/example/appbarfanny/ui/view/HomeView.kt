@@ -2,6 +2,7 @@ package com.example.appbarfanny.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,11 +11,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.TableRestaurant
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,9 +30,15 @@ import coil.compose.AsyncImage
 import com.example.appbarfanny.R
 import com.example.appbarfanny.data.model.Bebida
 import com.example.appbarfanny.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         homeViewModel.loadBebidas()
     }
@@ -42,7 +48,7 @@ fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
     val error = homeViewModel.errorMessage
 
     Scaffold(
-        topBar = { HomeHeader() },
+        topBar = { HomeHeader(homeViewModel.selectedTable) { showBottomSheet = true } },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
@@ -76,10 +82,28 @@ fun HomeView(homeViewModel: HomeViewModel = viewModel()) {
             }
         }
     }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            TableSelectorBottomSheet(onTableSelected = {
+                homeViewModel.onTableSelected(it)
+                scope.launch {
+                    sheetState.hide()
+                }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        showBottomSheet = false
+                    }
+                }
+            }, homeViewModel.selectedTable)
+        }
+    }
 }
 
 @Composable
-fun HomeHeader() {
+fun HomeHeader(selectedTable: Int, onTableClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -102,9 +126,9 @@ fun HomeHeader() {
                 Text(text = "Darlene", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
-        IconButton(onClick = { /* TODO */ }) {
-            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-        }
+        Chip(onClick = onTableClick, label = { Text(String.format("Mesa %02d", selectedTable)) }, leadingIcon = {
+            Icon(Icons.Default.TableRestaurant, contentDescription = "Table Icon")
+        })
     }
 }
 
@@ -203,10 +227,61 @@ fun BebidaGridItem(bebida: Bebida) {
     }
 }
 
+@Composable
+fun TableSelectorBottomSheet(onTableSelected: (Int) -> Unit, selectedTable: Int) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text("Seleccionar Mesa", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(5),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(20) { table ->
+                val tableNumber = table + 1
+                val isSelected = tableNumber == selectedTable
+                Button(
+                    onClick = { onTableSelected(tableNumber) },
+                    shape = CircleShape,
+                    modifier = Modifier.aspectRatio(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(text = tableNumber.toString())
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomeViewPreview() {
     MaterialTheme {
         HomeView()
+    }
+}
+
+@Composable
+fun Chip(
+    onClick: () -> Unit,
+    label: @Composable () -> Unit,
+    leadingIcon: @Composable () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            leadingIcon()
+            Spacer(modifier = Modifier.width(4.dp))
+            label()
+        }
     }
 }

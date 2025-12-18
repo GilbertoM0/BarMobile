@@ -16,6 +16,12 @@ class HomeViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
     var searchQuery by mutableStateOf("")
         private set
+    var selectedTable by mutableStateOf(4) // Default table
+        private set
+
+    fun onTableSelected(table: Int) {
+        selectedTable = table
+    }
 
     fun onSearchQueryChanged(query: String) {
         searchQuery = query
