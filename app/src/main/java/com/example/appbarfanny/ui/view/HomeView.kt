@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.TableRestaurant
 import androidx.compose.material3.*
@@ -38,8 +39,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewModel()) {
     val sheetState = rememberModalBottomSheetState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showCallDialog by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         homeViewModel.loadBebidas()
@@ -51,7 +55,16 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
 
     Scaffold(
         topBar = { HomeHeader(homeViewModel.selectedTable) { showBottomSheet = true } },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showCallDialog = true },
+                containerColor = Color(0xFF6650a4)
+            ) {
+                Icon(Icons.Default.Notifications, contentDescription = "Llamar al mesero", tint = Color.White)
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             SearchBar(homeViewModel.searchQuery, homeViewModel::onSearchQueryChanged)
@@ -103,6 +116,40 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
                 }
             }, homeViewModel.selectedTable)
         }
+    }
+
+    if (showCallDialog) {
+        AlertDialog(
+            onDismissRequest = { showCallDialog = false },
+            title = { Text("Aviso", color = Color.White) },
+            text = { Text("¿Qué deseas hacer?", color = Color.White.copy(alpha = 0.8f)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showCallDialog = false
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Enviando aviso para la Mesa ${String.format("%02d", homeViewModel.selectedTable)}...")
+                        }
+                    }
+                ) {
+                    Text("Llamar al mesero")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showCallDialog = false
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Enviando aviso para pedir la cuenta en la Mesa ${String.format("%02d", homeViewModel.selectedTable)}...")
+                        }
+                    }
+                ) {
+                    Text("Pedir la cuenta")
+                }
+            },
+            containerColor = Color(0xFF2C2C2C),
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 }
 
