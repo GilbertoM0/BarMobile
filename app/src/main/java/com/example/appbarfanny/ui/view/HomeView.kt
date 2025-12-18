@@ -10,10 +10,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.TableRestaurant
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -64,7 +61,27 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
                 Icon(Icons.Default.Notifications, contentDescription = "Llamar al mesero", tint = Color.White)
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { 
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(12.dp),
+                    containerColor = Color(0xFF6650a4),
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(12.dp),
+                    action = {
+                        TextButton(onClick = { data.dismiss() }) {
+                            Text("OK", color = Color.White)
+                        }
+                    }
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = "Success", modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(data.visuals.message)
+                    }
+                }
+            }
+        }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             SearchBar(homeViewModel.searchQuery, homeViewModel::onSearchQueryChanged)
@@ -195,7 +212,7 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
         placeholder = { Text("Buscar Productos") },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
         trailingIcon = {
-            IconButton(onClick = { /* TODO */ }) {
+            /*IconButton(onClick = { /* TODO */ }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_filter),
                     contentDescription = "Filter",
@@ -206,7 +223,7 @@ fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
                         .background(MaterialTheme.colorScheme.primary)
                         .padding(8.dp)
                 )
-            }
+            }*/
         },
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
@@ -225,7 +242,7 @@ fun FindResultsHeader(itemCount: Int) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = "Find results ($itemCount Items)", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(text = "(See All)", color = MaterialTheme.colorScheme.primary)
+        Text(text = "(-----)", color = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -254,9 +271,9 @@ fun BebidaGridItem(bebida: Bebida, onProductClick: () -> Unit) {
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()
                 )
-                IconButton(onClick = { /* TODO: Favorite action */ }) {
-                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Favorite", tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
+//                IconButton(onClick = { /* TODO: Favorite action */ }) {
+//                    Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Favorite", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+//                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
