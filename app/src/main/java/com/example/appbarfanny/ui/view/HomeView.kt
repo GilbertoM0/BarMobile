@@ -163,9 +163,7 @@ fun HomeView(navController: NavController, homeViewModel: HomeViewModel = viewMo
                 TextButton(
                     onClick = {
                         showCallDialog = false
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Enviando aviso para pedir la cuenta en la Mesa ${String.format("%02d", homeViewModel.selectedTable)}...")
-                        }
+                        navController.navigate(AppScreens.BillSummaryView.route)
                     }
                 ) {
                     Text("Pedir la cuenta")

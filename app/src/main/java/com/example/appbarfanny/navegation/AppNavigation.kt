@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.appbarfanny.ui.preview.SplashScreen
 import com.example.appbarfanny.ui.view.AllProductsView
+import com.example.appbarfanny.ui.view.BillSummaryView
 import com.example.appbarfanny.ui.view.HomeView
 import com.example.appbarfanny.ui.preview.PreviewScreen
 import com.example.appbarfanny.ui.view.ProductDetailView
@@ -39,6 +40,9 @@ fun AppNavigation() {
         composable(AppScreens.AllProductsView.route) {
             AllProductsView(navController, homeViewModel)
         }
+        composable(AppScreens.BillSummaryView.route) {
+            BillSummaryView(navController, homeViewModel)
+        }
         composable(
             route = AppScreens.ProductDetailView.route + "/{bebidaId}",
             arguments = listOf(navArgument("bebidaId") { type = NavType.IntType })
@@ -55,5 +59,6 @@ sealed class AppScreens(val route: String) {
     object PreviewScreen : AppScreens("preview_screen")
     object HomeView : AppScreens("home_view")
     object AllProductsView : AppScreens("all_products_view")
+    object BillSummaryView : AppScreens("bill_summary_view")
     object ProductDetailView : AppScreens("product_detail_view")
 }

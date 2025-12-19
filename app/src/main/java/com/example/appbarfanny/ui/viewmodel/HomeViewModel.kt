@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appbarfanny.data.RetrofitClient
 import com.example.appbarfanny.data.model.Bebida
+import com.example.appbarfanny.data.model.OrderItem
 import com.example.appbarfanny.data.model.OrderStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,6 +18,21 @@ class HomeViewModel : ViewModel() {
     val homeScreenBebidas: List<Bebida>
         get() = filteredBebidas.take(6)
 
+    var orderItems by mutableStateOf<List<OrderItem>>(emptyList())
+        private set
+
+    val orderSubtotal: Double
+        get() = orderItems.sumOf { it.subtotal }
+
+    var includeTip by mutableStateOf(true)
+        private set
+
+    val tipAmount: Double
+        get() = if (includeTip) orderSubtotal * 0.10 else 0.0
+
+    val orderTotal: Double
+        get() = orderSubtotal + tipAmount
+
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
     var searchQuery by mutableStateOf("")
@@ -25,6 +41,20 @@ class HomeViewModel : ViewModel() {
         private set
     var orderStatus by mutableStateOf<OrderStatus?>(null)
         private set
+
+    fun addToOrder(bebida: Bebida) {
+        val existingItem = orderItems.find { it.bebida.id == bebida.id }
+        if (existingItem != null) {
+            existingItem.quantity++
+            orderItems = orderItems.toList() // Trigger recomposition
+        } else {
+            orderItems = orderItems + OrderItem(bebida = bebida)
+        }
+    }
+
+    fun onIncludeTipChanged(include: Boolean) {
+        includeTip = include
+    }
 
     fun startOrderStatusSimulation() {
         viewModelScope.launch {

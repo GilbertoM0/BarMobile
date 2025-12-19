@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -103,6 +102,7 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
 
                         Button(
                             onClick = { 
+                                homeViewModel.addToOrder(bebida)
                                 homeViewModel.startOrderStatusSimulation()
                                 navController.popBackStack()
                              },
