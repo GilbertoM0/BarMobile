@@ -42,13 +42,13 @@ class HomeViewModel : ViewModel() {
     var orderStatus by mutableStateOf<OrderStatus?>(null)
         private set
 
-    fun addToOrder(bebida: Bebida) {
+    fun addToOrder(bebida: Bebida, quantity: Int) {
         val existingItem = orderItems.find { it.bebida.id == bebida.id }
         if (existingItem != null) {
-            existingItem.quantity++
+            existingItem.quantity += quantity
             orderItems = orderItems.toList() // Trigger recomposition
         } else {
-            orderItems = orderItems + OrderItem(bebida = bebida)
+            orderItems = orderItems + OrderItem(bebida = bebida, quantity = quantity)
         }
     }
 

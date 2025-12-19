@@ -6,6 +6,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +25,7 @@ import com.example.appbarfanny.ui.viewmodel.HomeViewModel
 @Composable
 fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel, bebidaId: Int) {
     val bebida = homeViewModel.getBebidaById(bebidaId)
+    var quantity by remember { mutableStateOf(1) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -80,21 +83,18 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
                         )
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Size Selector
-                        var selectedSize by remember { mutableStateOf("Mediano") }
-                        val sizes = listOf("Pequeño", "Mediano", "Grande")
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            sizes.forEach { size ->
-                                Button(
-                                    onClick = { selectedSize = size },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (selectedSize == size) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                                ) {
-                                    Text(size, color = if (selectedSize == size) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
+                        // Quantity Selector
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            OutlinedButton(onClick = { if (quantity > 1) quantity-- }, shape = CircleShape) {
+                                Icon(Icons.Default.Remove, contentDescription = "Remove")
+                            }
+                            Text(
+                                text = quantity.toString(),
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            OutlinedButton(onClick = { quantity++ }, shape = CircleShape) {
+                                Icon(Icons.Default.Add, contentDescription = "Add")
                             }
                         }
 
@@ -102,7 +102,7 @@ fun ProductDetailView(navController: NavController, homeViewModel: HomeViewModel
 
                         Button(
                             onClick = { 
-                                homeViewModel.addToOrder(bebida)
+                                homeViewModel.addToOrder(bebida, quantity)
                                 homeViewModel.startOrderStatusSimulation()
                                 navController.popBackStack()
                              },
